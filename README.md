@@ -35,6 +35,6 @@ Offical Website
 - [JWT](https://jwt.io/)
 
 
-## 로그
+## Log
 
 - Version 1.0 ( 2023.01.12 )
