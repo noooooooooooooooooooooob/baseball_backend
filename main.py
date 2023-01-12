@@ -1,15 +1,15 @@
 from flask import Flask
-from datetime import datetime
-from flask import render_template, request, redirect, url_for, session, jsonify
-import app.api.baseball as bb
+from flask import render_template
+import app.api.token as token
+
 app = Flask(__name__)
 
 @app.route("/")
 def index():
 
-    testReturn = bb.testApi()
+    tokenLog = token.tokenIssue()
 
-    return render_template("/index.html", testReturn = testReturn)
+    return render_template("/index.html")
 
 
 if __name__ == '__main__':
