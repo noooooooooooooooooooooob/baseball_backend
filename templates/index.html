@@ -3,8 +3,29 @@
 <head>
     <meta charset="UTF-8">
     <title>Title</title>
+    <script src="https://code.jquery.com/jquery-3.6.3.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-cookie/1.4.1/jquery.cookie.js"></script>
 </head>
 <body>
-    {{ tokenLog }}
+<script>
+    function login(){
+       $.ajax({
+            url:"/member/login",
+            type:"POST",
+            data:{"id":"test","pw":"123456"}
+       }).done(function(pResult){
+
+            if(pResult['result'] == 'success'){
+                $.cookie('loginToken', pResult['token'], {path:'/'});
+                window.location.replace("/member/login_check")
+            } else {
+                alert(pResult['msg'])
+            }
+
+       });
+    }
+</script>
+
+<div onclick="login()">버튼클릭</div>
 </body>
 </html>
