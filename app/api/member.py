@@ -8,6 +8,7 @@ memberBlueprint = Blueprint('member', __name__, url_prefix="/member")
 SECRET_KEY = 'asdasdsadsad'
 
 
+#토큰 발급 example
 @memberBlueprint.route("/login", methods=['POST'])
 def login_proc():
         user_id = request.form['id']

@@ -1,15 +1,20 @@
 from flask import Flask,request,render_template,jsonify
 from app.api import member
-bp = Flask(__name__)
-bp.register_blueprint(member.memberBlueprint)
-@bp.route("/")
+import app.db as db
+app = Flask(__name__)
+
+
+
+app.register_blueprint(member.memberBlueprint)
+
+@app.route("/")
 def index():
+
+    print(db.User.query.all())
 
     return render_template("/index.html")
 
 
-
-
 if __name__ == '__main__':
-    bp.run(host='0.0.0.0', port=5000, debug=True)
+    app.run(host='0.0.0.0', port=5000, debug=True)
 
