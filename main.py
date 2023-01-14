@@ -10,9 +10,8 @@ app.register_blueprint(member.memberBlueprint)
 @app.route("/")
 def index():
 
-    print(db.User.query.all())
 
-    return render_template("/index.html")
+    return render_template("/index.html", test = db.User.query.all())
 
 
 if __name__ == '__main__':

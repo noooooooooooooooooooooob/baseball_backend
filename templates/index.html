@@ -12,7 +12,7 @@
        $.ajax({
             url:"/member/login",
             type:"POST",
-            data:{"id":"test","pw":"123456"}
+            data:{"id":$("#id").val(),"pw":$("#pw").val()}
        }).done(function(pResult){
 
             if(pResult['result'] == 'success'){
@@ -25,7 +25,16 @@
        });
     }
 </script>
+<input type="text" id="id" name="id">
+<input type="password" id="pw" name="pw">
 
 <div onclick="login()">버튼클릭</div>
+<div>
+    test id : test
+    test pw : 123456
+</div>
+{% for tests in test %}
+    {{ tests.name }}{{ tests.email }} {{ tests.team }}
+{% endfor %}
 </body>
 </html>
