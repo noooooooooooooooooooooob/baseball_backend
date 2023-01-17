@@ -1,11 +1,11 @@
 from flask import Flask,request,render_template,jsonify
-from app.api import member
+from app.api import user
 import app.db as db
 app = Flask(__name__)
 
 
 
-app.register_blueprint(member.memberBlueprint)
+app.register_blueprint(user.userBlueprint)
 
 @app.route("/")
 def index():

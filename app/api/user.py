@@ -4,12 +4,29 @@ import jwt
 from datetime import datetime, timedelta
 
 app = Flask(__name__)
-memberBlueprint = Blueprint('member', __name__, url_prefix="/member")
+userBlueprint = Blueprint('user', __name__, url_prefix="/user")
 SECRET_KEY = 'asdasdsadsad'
 
+# 테스트 API
+@userBlueprint.route("/test", methods=['GET'])
+def test():
+    return jsonify({'result': 'success', 'message': 'Hello World'})
+
+# 회원가입 API
+@userBlueprint.route("/signup", methods=['POST'])
+def signUp():
+    user_id = request.form['userId']
+    user_pw = request.form['password']
+    user_team = request.form['team']
+
+    print(user_id)
+    print(user_pw)
+    print(user_team)
+
+    return jsonify({'result': 'success', 'message': 'Hello World'})
 
 #토큰 발급 example
-@memberBlueprint.route("/login", methods=['POST'])
+@userBlueprint.route("/login", methods=['POST'])
 def login_proc():
         user_id = request.form['id']
         user_pw = request.form['pw']
@@ -34,7 +51,7 @@ def login_proc():
 
 
 #cookie관리
-@memberBlueprint.route("/login_check")
+@userBlueprint.route("/login_check")
 def loginCheck():
     token_receive = request.cookies.get('loginToken')
     try:
