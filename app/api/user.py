@@ -1,4 +1,4 @@
-from flask import jsonify,request,Flask,Blueprint,render_template
+from flask import jsonify,request,Flask,Blueprint,render_template,make_response
 import bcrypt
 import jwt
 from app.api import user
@@ -45,12 +45,12 @@ def login_proc():
             }
             token = jwt.encode(payload, SECRET_KEY, algorithm='HS256')
 
-            return jsonify({'result': 'success', 'token': token})
+            return build_actual_response(jsonify({'result': 'success', 'token': token}))
 
 
         # 정보가 틀린 경우
         else:
-            return jsonify({'result': 'fail', 'msg': '정보 틀림'})
+            return build_actual_response(jsonify({'result': 'fail', 'msg': '정보 틀림'}))
 
 
 
@@ -67,3 +67,14 @@ def loginCheck():
         return "error"
     except jwt.exceptions.DecodeError:
         return "error"
+
+def build_preflight_response():
+    response = make_response()
+    response.headers.add("Access-Control-Allow-Origin", "*")
+    response.headers.add('Access-Control-Allow-Headers', "*")
+    response.headers.add('Access-Control-Allow-Methods', "*")
+    return response
+    
+def build_actual_response(response):
+    response.headers.add("Access-Control-Allow-Origin", "*")
+    return response
