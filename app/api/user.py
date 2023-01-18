@@ -8,7 +8,7 @@ from datetime import datetime, timedelta
 
 app = Flask(__name__)
 userBlueprint = Blueprint('user', __name__, url_prefix="/user")
-CORS(userBlueprint)
+CORS(app)
 SECRET_KEY = 'asdasdsadsad'
 
 # 테스트 API
