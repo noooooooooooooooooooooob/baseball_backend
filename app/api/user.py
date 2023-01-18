@@ -35,24 +35,24 @@ def signUp():
 #토큰 발급 example
 @userBlueprint.route("/signin", methods=['POST'])
 def login_proc():
-        params = request.get_json()
+    params = request.get_json()
 
-        user_id = params['userId']
-        user_pw = params['password']
+    user_id = params['userId']
+    user_pw = params['password']
 
-        # 정보가 맞는 경우
-        if user_id == "test" and user_pw == "123456":
-            payload = {
-                'id': user_id,
-                'exp': datetime.utcnow() + timedelta(seconds=60)
-            }
-            token = jwt.encode(payload, SECRET_KEY, algorithm='HS256')
+    # 정보가 맞는 경우
+    if user_id == "test" and user_pw == "123456":
+        payload = {
+            'id': user_id,
+            'exp': datetime.utcnow() + timedelta(seconds=60)
+        }
+        token = jwt.encode(payload, SECRET_KEY, algorithm='HS256')
 
-            return build_actual_response(jsonify({'result': 'success', 'token': token}))
+        return build_actual_response(jsonify({'result': 'success', 'token': token}))
 
-        # 정보가 틀린 경우
-        else:
-            return build_actual_response(jsonify({'result': 'fail', 'msg': '정보 틀림'}))
+    # 정보가 틀린 경우
+    else:
+        return build_actual_response(jsonify({'result': 'fail', 'msg': '정보 틀림'}))
 
 
 
