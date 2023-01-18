@@ -1,6 +1,8 @@
 from flask import jsonify,request,Flask,Blueprint,render_template
 import bcrypt
 import jwt
+from app.api import user
+import app.db as db
 from datetime import datetime, timedelta
 
 app = Flask(__name__)
@@ -15,22 +17,25 @@ def test():
 # 회원가입 API
 @userBlueprint.route("/signup", methods=['POST'])
 def signUp():
-    user_id = request.form['userId']
-    user_pw = request.form['password']
-    user_team = request.form['team']
+    params = request.get_json()
 
-    print(user_id)
-    print(user_pw)
-    print(user_team)
+    user_id = params['userId']
+    user_pw = params['password']
+    user_team = params['team']
+
+    # data = db.User(userid = user_id, password = user_pw, team = user_team)
+    # db.db.add(data)
+    # db.db.commit()
 
     return jsonify({'result': 'success', 'message': 'Hello World'})
 
 #토큰 발급 example
-@userBlueprint.route("/login", methods=['POST'])
+@userBlueprint.route("/signin", methods=['POST'])
 def login_proc():
-        user_id = request.form['id']
-        user_pw = request.form['pw']
+        params = request.get_json()
 
+        user_id = params['userId']
+        user_pw = params['password']
 
         # 정보가 맞는 경우
         if user_id == "test" and user_pw == "123456":
