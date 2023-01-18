@@ -1,9 +1,12 @@
 from flask import Flask,request,render_template,jsonify,make_response
+from flask_cors import CORS
 from app.api import user
 import app.db as db
 app = Flask(__name__)
 
 app.register_blueprint(user.userBlueprint)
+
+CORS(app)
 
 @app.route("/")
 def index():

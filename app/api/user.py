@@ -1,4 +1,5 @@
 from flask import jsonify,request,Flask,Blueprint,render_template,make_response
+from flask_cors import CORS
 import bcrypt
 import jwt
 from app.api import user
@@ -7,6 +8,7 @@ from datetime import datetime, timedelta
 
 app = Flask(__name__)
 userBlueprint = Blueprint('user', __name__, url_prefix="/user")
+CORS(userBlueprint)
 SECRET_KEY = 'asdasdsadsad'
 
 # 테스트 API
