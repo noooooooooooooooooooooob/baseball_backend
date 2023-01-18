@@ -3,8 +3,6 @@ from app.api import user
 import app.db as db
 app = Flask(__name__)
 
-
-
 app.register_blueprint(user.userBlueprint)
 
 @app.route("/")
@@ -15,5 +13,5 @@ def index():
 
 
 if __name__ == '__main__':
-    app.run(host='0.0.0.0', port=5000, debug=True)
+    app.run(host='0.0.0.0', port=5001, debug=True)
 
