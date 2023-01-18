@@ -8,7 +8,8 @@ from datetime import datetime, timedelta
 
 app = Flask(__name__)
 userBlueprint = Blueprint('user', __name__, url_prefix="/user")
-CORS(app)
+CORS(app, resources={r'/*': {'origins': '*'}})
+app.register_blueprint(userBlueprint)
 SECRET_KEY = 'asdasdsadsad'
 
 # 테스트 API
@@ -48,7 +49,6 @@ def login_proc():
             token = jwt.encode(payload, SECRET_KEY, algorithm='HS256')
 
             return build_actual_response(jsonify({'result': 'success', 'token': token}))
-
 
         # 정보가 틀린 경우
         else:
