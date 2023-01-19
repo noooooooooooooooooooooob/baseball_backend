@@ -1,5 +1,4 @@
 from flask import jsonify,request,Flask,Blueprint,render_template,make_response
-from flask_cors import CORS
 import bcrypt
 import jwt
 from app.api import user
@@ -8,7 +7,6 @@ from datetime import datetime, timedelta
 
 app = Flask(__name__)
 userBlueprint = Blueprint('user', __name__, url_prefix="/user")
-CORS(app, resources={r'/*': {'origins': '*'}})
 app.register_blueprint(userBlueprint)
 SECRET_KEY = 'asdasdsadsad'
 
@@ -26,15 +24,14 @@ def signUp():
     user_pw = params['password']
     user_team = params['team']
 
-    # data = db.User(userid = user_id, password = user_pw, team = user_team)
-    # db.db.add(data)
-    # db.db.commit()
-
     return jsonify({'result': 'success', 'message': 'Hello World'})
 
 #토큰 발급 example
-@userBlueprint.route("/signin", methods=['POST'])
+@userBlueprint.route("/signin", methods=['OPTIONS', 'POST'])
 def login_proc():
+    if request.method == 'OPTIONS':
+        return build_preflight_response()
+
     params = request.get_json()
 
     user_id = params['userId']
@@ -48,14 +45,11 @@ def login_proc():
         }
         token = jwt.encode(payload, SECRET_KEY, algorithm='HS256')
 
-        return build_actual_response(jsonify({'result': 'success', 'token': token}))
+        return jsonify({'result': 'success', 'token': token})
 
     # 정보가 틀린 경우
     else:
         return build_actual_response(jsonify({'result': 'fail', 'msg': '정보 틀림'}))
-
-
-
 
 #cookie관리
 @userBlueprint.route("/login_check")
