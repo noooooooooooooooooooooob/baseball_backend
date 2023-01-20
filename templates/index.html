@@ -10,7 +10,7 @@
 <script>
     function login(){
        $.ajax({
-            url:"/member/login",
+            url:"/user/login",
             type:"POST",
             data:{"id":$("#id").val(),"pw":$("#pw").val()}
        }).done(function(pResult){
@@ -24,11 +24,22 @@
 
        });
     }
+
+    function signUp(){
+        $.ajax({
+            url:"/user/signup",
+            type:"POST",
+
+       }).done(function(pResult){
+            console.log(pResult);
+       });
+    }
 </script>
 <input type="text" id="id" name="id">
 <input type="password" id="pw" name="pw">
 
 <div onclick="login()">버튼클릭</div>
+<div onclick="signUp()">회원가입 테스트</div>
 <div>
     test id : test
     test pw : 123456

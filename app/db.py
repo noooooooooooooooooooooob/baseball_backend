@@ -21,12 +21,13 @@ class User(db.Model):
     logindate = db.Column(db.DateTime)
     updatedate = db.Column(db.DateTime)
 
-    def __init__(self, name, phone, email, userId, password, team):
+    def __init__(self, name, phone, email, userid, password, team, insertdate):
         self.name = name
         self.phone = phone
         self.email = email
-        self.userId = userId
+        self.userid = userid
         self.password = password
         self.team = team
+        self.insertdate = insertdate
 
 

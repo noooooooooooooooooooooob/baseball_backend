@@ -1,5 +1,5 @@
 from flask import jsonify,request,Flask,Blueprint,render_template,make_response
-import bcrypt
+from flask_bcrypt import Bcrypt
 import jwt
 from app.api import user
 import app.db as db
@@ -9,6 +9,9 @@ app = Flask(__name__)
 userBlueprint = Blueprint('user', __name__, url_prefix="/user")
 app.register_blueprint(userBlueprint)
 SECRET_KEY = 'asdasdsadsad'
+BCRYPT_LEVEL = 10
+bcrypt = Bcrypt(app)
+
 
 # 테스트 API
 @userBlueprint.route("/test", methods=['GET'])
@@ -19,13 +22,28 @@ def test():
 @userBlueprint.route("/signup", methods=['POST'])
 def signUp():
     params = request.get_json()
+    # userPassword = bcrypt.generate_password_hash(params['password'])
 
-    user_id = params['userId']
-    user_pw = params['password']
-    user_team = params['team']
 
+    # userSignup = db.User(name=params['name'], phone=params['phone'], email=params['email'], userid = params['userId'], password=userPassword, team=params['team'], insertdate = datetime.now())
+    userSignup = db.User(name='테스트 이름', phone='010-1234-1234', email='noob@gmail.com', userid='testid_1234',
+                         password=bcrypt.generate_password_hash('testpw'), team='LG', insertdate=datetime.now())
+
+    db.db.session.add(userSignup)
+    db.db.session.commit()
     return jsonify({'result': 'success', 'message': 'Hello World'})
 
+@userBlueprint.route("/checkId", methods=['GET'])
+def checkId():
+
+    userId = request.args.get("userId")
+
+    idCheck = db.User.query.filter_by(id='{}'.format(userId))
+
+    if idCheck is None:
+        return jsonify({'result': 'success', 'message': 'id have no'})
+    else:
+        return jsonify({'result': 'fail', 'message': 'id is already'})
 #토큰 발급 example
 @userBlueprint.route("/signin", methods=['OPTIONS', 'POST'])
 def login_proc():
