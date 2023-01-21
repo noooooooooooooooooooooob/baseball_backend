@@ -22,12 +22,15 @@ def test():
 @userBlueprint.route("/signup", methods=['POST'])
 def signUp():
     params = request.get_json()
-    # userPassword = bcrypt.generate_password_hash(params['password'])
+    userPassword = bcrypt.generate_password_hash(params['password'])
+    if request.method == 'OPTIONS':
+        return build_preflight_response()
 
+    userSignup = db.User(name=params['name'], phone=params['phone'], email=params['email'], userid = params['userId'], password=userPassword, team=params['team'], insertdate = datetime.now())
 
-    # userSignup = db.User(name=params['name'], phone=params['phone'], email=params['email'], userid = params['userId'], password=userPassword, team=params['team'], insertdate = datetime.now())
-    userSignup = db.User(name='테스트 이름', phone='010-1234-1234', email='noob@gmail.com', userid='testid_1234',
-                         password=bcrypt.generate_password_hash('testpw'), team='LG', insertdate=datetime.now())
+    #insert 테스트
+    #userSignup = db.User(name='테스트 이름', phone='010-1234-1234', email='noob@gmail.com', userid='testid_1234',
+    #                    password=bcrypt.generate_password_hash('testpw'), team='LG', insertdate=datetime.now())
 
     db.db.session.add(userSignup)
     db.db.session.commit()
