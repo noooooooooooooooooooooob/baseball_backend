@@ -29,10 +29,16 @@
         $.ajax({
             url:"/user/signup",
             type:"POST",
-
+            data:{}
        }).done(function(pResult){
             console.log(pResult);
        });
+    }
+
+    function idCheck(){
+        $.ajax({
+            url: "/user/findId"
+        });
     }
 </script>
 <input type="text" id="id" name="id">
@@ -40,6 +46,7 @@
 
 <div onclick="login()">버튼클릭</div>
 <div onclick="signUp()">회원가입 테스트</div>
+<div onClick="idCheck()"></div>
 <div>
     test id : test
     test pw : 123456

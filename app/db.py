@@ -11,9 +11,6 @@ db = SQLAlchemy(app)
 class User(db.Model):
     __table_args__ = {"schema": "baseball"}
     id = db.Column('id', db.Integer, primary_key=True)
-    name = db.Column(db.String(100))
-    phone = db.Column(db.String(100))
-    email = db.Column(db.String(100))
     userid = db.Column(db.String(100))
     password = db.Column(db.String(100))
     team = db.Column(db.String(100))
@@ -21,10 +18,7 @@ class User(db.Model):
     logindate = db.Column(db.DateTime)
     updatedate = db.Column(db.DateTime)
 
-    def __init__(self, name, phone, email, userid, password, team, insertdate):
-        self.name = name
-        self.phone = phone
-        self.email = email
+    def __init__(self, userid, password, team, insertdate):
         self.userid = userid
         self.password = password
         self.team = team
