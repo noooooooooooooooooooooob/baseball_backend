@@ -94,3 +94,4 @@ widgetsnbextension==3.5.1
 wsproto==1.2.0
 zipp==3.11.0
 flask-cors==1.10.3
+flask-bcrypt==1.0.1
