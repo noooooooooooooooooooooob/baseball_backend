@@ -21,12 +21,13 @@ def test():
 
 
 # 회원가입 API
-@userBlueprint.route("/signup", methods=['POST'])
+@userBlueprint.route("/signup", methods=['OPTIONS', 'POST'])
 def signUp():
-    params = request.get_json()
-    userPassword = bcrypt.generate_password_hash(params['password']).decode()
     if request.method == 'OPTIONS':
         return build_preflight_response()
+
+    params = request.get_json()
+    userPassword = bcrypt.generate_password_hash(params['password']).decode()
 
     if len(params) == 3:
         userSignup = db.User(userid=params['userId'], password=userPassword, team=params['team'],
@@ -62,9 +63,6 @@ def login_proc():
 
     params = request.get_json()
 
-
-
-
     if len(params) == 2:
         # 정보가 맞는 경우
         user_id = params['userId']
@@ -87,6 +85,7 @@ def login_proc():
                 return make_response('존재하지 않는 아이디 입니다.', 400)
     else:
         return make_response('요청 값이 잘못 되었습니다.', 400)
+
 # cookie관리
 @userBlueprint.route("/login_check")
 def loginCheck():
@@ -99,7 +98,6 @@ def loginCheck():
     except jwt.exceptions.DecodeError:
         return "error"
 
-
 @userBlueprint.route("/findId")
 def findId():
     userName = request.args.get("name")
@@ -109,14 +107,12 @@ def findId():
 
     return jsonify({'result': 'success'})
 
-
 def build_preflight_response():
     response = make_response()
     response.headers.add("Access-Control-Allow-Origin", "*")
     response.headers.add('Access-Control-Allow-Headers', "*")
     response.headers.add('Access-Control-Allow-Methods', "*")
     return response
-
 
 def build_actual_response(response):
     response.headers.add("Access-Control-Allow-Origin", "*")
