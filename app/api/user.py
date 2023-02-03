@@ -1,12 +1,15 @@
 from flask import jsonify, request, Flask, Blueprint, render_template, make_response, abort
 from flask_bcrypt import Bcrypt
 import jwt
+import time
 from app.api import user
 import app.db as db
 from datetime import datetime, timedelta
 from http import HTTPStatus
 
+
 app = Flask(__name__)
+app.config['JSON_AS_ASCII'] = False
 userBlueprint = Blueprint('user', __name__, url_prefix="/user")
 app.register_blueprint(userBlueprint)
 SECRET_KEY = 'asdasdsadsad'
@@ -73,7 +76,7 @@ def checkId():
 
 # 토큰 발급 example
 @userBlueprint.route("/signin", methods=['OPTIONS', 'POST'])
-def login_proc():
+def signin():
     if request.method == 'OPTIONS':
         return build_preflight_response()
     
@@ -92,7 +95,8 @@ def login_proc():
         if idCheck and bcrypt.check_password_hash(idCheck.password, user_pw):
             payload = {
                 'id': user_id,
-                'exp': datetime.utcnow() + timedelta(seconds=60)
+                'iat': int(time.time()),
+                'exp': int(time.time()) + 21600 # 6 hour from now
             }
             token = jwt.encode(payload, SECRET_KEY, algorithm='HS256')
             res["token"] = token
@@ -105,8 +109,8 @@ def login_proc():
     return result_make(res, msg, code)
 
 # cookie관리
-@userBlueprint.route("/login-check", methods=['GET'])
-def loginCheck():
+@userBlueprint.route("/signin-check", methods=['GET'])
+def signinCheck():
     token_receive = request.cookies.get('loginToken')
     
     res = {}
@@ -115,11 +119,12 @@ def loginCheck():
     
     try:
         payload = jwt.decode(token_receive, SECRET_KEY, algorithms=['HS256'])
-        return payload
-    except jwt.ExpiredSignatureError:
-        return "error"
-    except jwt.exceptions.DecodeError:
-        return "error"
+        res = dict(payload)
+    except (jwt.ExpiredSignatureError, jwt.exceptions.DecodeError):
+        msg = '유효하지 않은 토큰 정보 입니다.'
+        code = 403
+
+    return result_make(res, msg, code)
 
 # 고인
 # @userBlueprint.route("/findId")
