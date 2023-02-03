@@ -13,18 +13,27 @@ SECRET_KEY = 'asdasdsadsad'
 BCRYPT_LEVEL = 10
 bcrypt = Bcrypt(app)
 
+fail = '요청 값을 다시 한 번 확인해주세요.'
+success = 'success'
 
 # 테스트 API
 @userBlueprint.route("/test", methods=['GET'])
 def test():
-    return jsonify({'result': 'success', 'message': 'Hello World'})
+    res = {'message': 'success'}
+    msg = 'success'
+    code = 200
 
+    return result_make(res, msg, code)
 
 # 회원가입 API
 @userBlueprint.route("/signup", methods=['OPTIONS', 'POST'])
 def signUp():
     if request.method == 'OPTIONS':
         return build_preflight_response()
+
+    res = {}
+    msg = 'success'
+    code = 201
 
     params = request.get_json()
     userPassword = bcrypt.generate_password_hash(params['password']).decode()
@@ -34,33 +43,44 @@ def signUp():
                              insertdate=datetime.now())
         db.db.session.add(userSignup)
         db.db.session.commit()
-        return make_response('success', 201)
+        
     else:
+        code = 400
+        msg = fail
 
-        return make_response('요청 값을 다시 한 번 확인해주세요.', 400)
+    return result_make(res, msg, code)
 
-
-@userBlueprint.route("/checkId", methods=['GET'])
+@userBlueprint.route("/checkid", methods=['GET'])
 def checkId():
     userId = request.args.get("userId")
+    
+    res = {}
+    msg = 'success'
+    code = 200
 
     if userId is not None:
-
         idCheck = db.User.query.filter( db.User.userid == userId).all()
-        print(len(idCheck))
+
         if len(idCheck) == 0:
-            return make_response('사용 가능한 아이디 입니다.', 200)
+            msg = '사용 가능한 아이디 입니다.'
         else:
-            return make_response('이미 존재하는 아이디 입니다.', 200)
+            msg = '이미 존재하는 아이디 입니다.'
     else:
-        return make_response("요청 값을 다시 한 번 확인해주세요.", 400)
+        code = 400 
+        msg = fail
+    
+    return result_make(res, msg, code)
 
 # 토큰 발급 example
 @userBlueprint.route("/signin", methods=['OPTIONS', 'POST'])
 def login_proc():
     if request.method == 'OPTIONS':
         return build_preflight_response()
-
+    
+    res = {}
+    msg = 'success'
+    code = 200
+    
     params = request.get_json()
 
     if len(params) == 2:
@@ -75,21 +95,24 @@ def login_proc():
                 'exp': datetime.utcnow() + timedelta(seconds=60)
             }
             token = jwt.encode(payload, SECRET_KEY, algorithm='HS256')
-
-            return make_response(token, 200)
+            res["token"] = token
         else:
-
-            if idCheck:
-                return make_response('아이디 혹은 비밀번호를 다시 한 번 확인해주세요.', 400)
-            else:
-                return make_response('존재하지 않는 아이디 입니다.', 400)
+            msg = "아이디 혹은 비밀번호를 다시 한 번 확인해주세요."
     else:
-        return make_response('요청 값이 잘못 되었습니다.', 400)
+        code = 400
+        msg = fail
+    
+    return result_make(res, msg, code)
 
 # cookie관리
-@userBlueprint.route("/login_check")
+@userBlueprint.route("/login-check", methods=['GET'])
 def loginCheck():
     token_receive = request.cookies.get('loginToken')
+    
+    res = {}
+    msg = 'success'
+    code = 200
+    
     try:
         payload = jwt.decode(token_receive, SECRET_KEY, algorithms=['HS256'])
         return payload
@@ -98,14 +121,15 @@ def loginCheck():
     except jwt.exceptions.DecodeError:
         return "error"
 
-@userBlueprint.route("/findId")
-def findId():
-    userName = request.args.get("name")
-    userPhone = request.args.get("phone")
+# 고인
+# @userBlueprint.route("/findId")
+# def findId():
+#     userName = request.args.get("name")
+#     userPhone = request.args.get("phone")
 
-    idCheck = db.User.query.filter(name=userName, phone=userPhone)
+#     idCheck = db.User.query.filter(name=userName, phone=userPhone)
 
-    return jsonify({'result': 'success'})
+#     return result_make(res, msg, code)
 
 def build_preflight_response():
     response = make_response()
@@ -117,3 +141,8 @@ def build_preflight_response():
 def build_actual_response(response):
     response.headers.add("Access-Control-Allow-Origin", "*")
     return response
+
+def result_make(res, msg, code):
+    result = {'result': res, 'message': msg}
+
+    return make_response(jsonify(result), code)
