@@ -1,20 +1,12 @@
-from flask import jsonify, request, Flask, Blueprint, render_template, make_response, abort
-from flask_bcrypt import Bcrypt
+from flask import jsonify, request, Blueprint, make_response
 import jwt
 import time
-from app.api import user
 import app.db as db
-from datetime import datetime, timedelta
-from http import HTTPStatus
+from datetime import datetime
+from config import app,SECRET_KEY, bcrypt
 
-
-app = Flask(__name__)
-app.config['JSON_AS_ASCII'] = False
 userBlueprint = Blueprint('user', __name__, url_prefix="/user")
 app.register_blueprint(userBlueprint)
-SECRET_KEY = 'asdasdsadsad'
-BCRYPT_LEVEL = 10
-bcrypt = Bcrypt(app)
 
 fail = '요청 값을 다시 한 번 확인해주세요.'
 success = 'success'

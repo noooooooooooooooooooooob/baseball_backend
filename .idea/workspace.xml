@@ -28,12 +28,12 @@
     <property name="DefaultHtmlFileTemplate" value="HTML File" />
     <property name="RunOnceActivity.OpenProjectViewOnStart" value="true" />
     <property name="RunOnceActivity.ShowReadmeOnStart" value="true" />
-    <property name="last_opened_file_path" value="$PROJECT_DIR$/app" />
+    <property name="last_opened_file_path" value="$PROJECT_DIR$" />
   </component>
   <component name="RecentsManager">
     <key name="CopyFile.RECENT_KEYS">
-      <recent name="D:\baseball_backend\app" />
       <recent name="D:\baseball_backend" />
+      <recent name="D:\baseball_backend\app" />
     </key>
     <key name="MoveFile.RECENT_KEYS">
       <recent name="D:\baseball_backend" />

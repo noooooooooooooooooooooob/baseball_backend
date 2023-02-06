@@ -1,12 +1,5 @@
-from flask import Flask,request,render_template,jsonify
-from flask_sqlalchemy import SQLAlchemy
+from config import db
 
-app = Flask(__name__)
-
-app.config['SQLALCHEMY_DATABASE_URI'] = "postgres://qpdqfreb:vupguJOZHn0GifZiWvj7Z6kNk_acbE7t@chunee.db.elephantsql.com/qpdqfreb"
-app.config['SECRET_KEY'] = "12346erwef"
-app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
-db = SQLAlchemy(app)
 
 class User(db.Model):
     __table_args__ = {"schema": "baseball"}
