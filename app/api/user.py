@@ -45,8 +45,11 @@ def signUp():
 
     return result_make(res, msg, code)
 
-@userBlueprint.route("/checkid", methods=['GET'])
+@userBlueprint.route("/checkid", methods=['OPTIONS', 'GET'])
 def checkId():
+    if request.method == 'OPTIONS':
+        return build_preflight_response()
+    
     userId = request.args.get("userId")
     
     res = {}
@@ -100,9 +103,21 @@ def signin():
     
     return result_make(res, msg, code)
 
+# 로그아웃
+@userBlueprint.route("/signout", methods=['OPTIONS', 'POST'])
+def signin():
+    res = {}
+    msg = 'success'
+    code = 200
+
+    return result_make(res, msg, code)
+
 # cookie관리
-@userBlueprint.route("/signin-check", methods=['GET'])
+@userBlueprint.route("/signin-check", methods=['OPTIONS', 'GET'])
 def signinCheck():
+    if request.method == 'OPTIONS':
+        return build_preflight_response()
+
     token_receive = request.cookies.get('loginToken')
     
     res = {}
