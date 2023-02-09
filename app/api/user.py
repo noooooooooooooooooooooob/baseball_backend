@@ -105,7 +105,7 @@ def signin():
 
 # 로그아웃
 @userBlueprint.route("/signout", methods=['OPTIONS', 'POST'])
-def signin():
+def signout():
     res = {}
     msg = 'success'
     code = 200
