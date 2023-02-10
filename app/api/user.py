@@ -26,17 +26,42 @@ class Signup(Resource):
     @user_api.doc('회원가입')
     @user_api.expect(signup_model)
     def post(self):
+
+        res = {}
+        msg = 'success'
+        code = 201
+
         params = request.get_json()
         userPassword = bcrypt.generate_password_hash(params['password']).decode()
+
         if len(params) == 3:
             userSignup = db.User(userid=params['userId'], password=userPassword, team=params['team'],
                                  insertdate=datetime.now())
             db.db.session.add(userSignup)
             db.db.session.commit()
 
-            res = {}
-            msg = 'success'
-            code = 201
+        else:
+            code = 400
+            msg = fail
+
+        return result_make(res, msg, code)
+
+@userBlueprint.route("/checkid", methods=['OPTIONS', 'GET'])
+def checkId():
+    if request.method == 'OPTIONS':
+        return build_preflight_response()
+    
+    userId = request.args.get("userId")
+    
+    res = {}
+    msg = 'success'
+    code = 200
+
+    if userId is not None:
+        idCheck = db.User.query.filter( db.User.userid == userId).all()
+
+        if len(idCheck) == 0:
+            msg = '사용 가능한 아이디 입니다.'
         else:
             res = {}
             msg = 'fail'
@@ -102,9 +127,21 @@ class Signin(Resource):
 
         return result_make(res, msg, code)
 
+# 로그아웃
+@userBlueprint.route("/signout", methods=['OPTIONS', 'POST'])
+def signout():
+    res = {}
+    msg = 'success'
+    code = 200
+
+    return result_make(res, msg, code)
+
 # cookie관리
-@userBlueprint.route("/signin-check", methods=['GET'])
+@userBlueprint.route("/signin-check", methods=['OPTIONS', 'GET'])
 def signinCheck():
+    if request.method == 'OPTIONS':
+        return build_preflight_response()
+
     token_receive = request.cookies.get('loginToken')
     
     res = {}
