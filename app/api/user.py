@@ -4,13 +4,13 @@ import time
 import app.db as db
 from datetime import datetime
 from config import app,SECRET_KEY, bcrypt
-
+from ..swagger import user_api, Resource, signup_model, reqparse,signin_model
 userBlueprint = Blueprint('user', __name__, url_prefix="/user")
 app.register_blueprint(userBlueprint)
 
+
 fail = '요청 값을 다시 한 번 확인해주세요.'
 success = 'success'
-
 # 테스트 API
 @userBlueprint.route("/test", methods=['GET'])
 def test():
@@ -21,84 +21,86 @@ def test():
     return result_make(res, msg, code)
 
 # 회원가입 API
-@userBlueprint.route("/signup", methods=['OPTIONS', 'POST'])
-def signUp():
-    if request.method == 'OPTIONS':
-        return build_preflight_response()
+@user_api.route("/signup")
+class Signup(Resource):
+    @user_api.doc('회원가입')
+    @user_api.expect(signup_model)
+    def post(self):
+        params = request.get_json()
+        userPassword = bcrypt.generate_password_hash(params['password']).decode()
+        if len(params) == 3:
+            userSignup = db.User(userid=params['userId'], password=userPassword, team=params['team'],
+                                 insertdate=datetime.now())
+            db.db.session.add(userSignup)
+            db.db.session.commit()
 
-    res = {}
-    msg = 'success'
-    code = 201
-
-    params = request.get_json()
-    userPassword = bcrypt.generate_password_hash(params['password']).decode()
-
-    if len(params) == 3:
-        userSignup = db.User(userid=params['userId'], password=userPassword, team=params['team'],
-                             insertdate=datetime.now())
-        db.db.session.add(userSignup)
-        db.db.session.commit()
-        
-    else:
-        code = 400
-        msg = fail
-
-    return result_make(res, msg, code)
-
-@userBlueprint.route("/checkid", methods=['GET'])
-def checkId():
-    userId = request.args.get("userId")
-    
-    res = {}
-    msg = 'success'
-    code = 200
-
-    if userId is not None:
-        idCheck = db.User.query.filter( db.User.userid == userId).all()
-
-        if len(idCheck) == 0:
-            msg = '사용 가능한 아이디 입니다.'
+            res = {}
+            msg = 'success'
+            code = 201
         else:
-            msg = '이미 존재하는 아이디 입니다.'
-    else:
-        code = 400 
-        msg = fail
-    
-    return result_make(res, msg, code)
+            res = {}
+            msg = 'fail'
+            code = 400
+
+        return result_make(res, msg, code)
+
+@user_api.route("/checkid/<string:userId>")
+class checkId(Resource):
+    @user_api.doc('아이디 체크')
+    def get(self, userId):
+        res = {}
+        msg = 'success'
+        code = 200
+
+        if userId is not None:
+            idCheck = db.User.query.filter( db.User.userid == userId).all()
+
+            if len(idCheck) == 0:
+                msg = '사용 가능한 아이디 입니다.'
+            else:
+                msg = '이미 존재하는 아이디 입니다.'
+        else:
+            code = 400
+            msg = fail
+
+        return result_make(res, msg, code)
 
 # 토큰 발급 example
-@userBlueprint.route("/signin", methods=['OPTIONS', 'POST'])
-def signin():
-    if request.method == 'OPTIONS':
-        return build_preflight_response()
-    
-    res = {}
-    msg = 'success'
-    code = 200
-    
-    params = request.get_json()
+@user_api.route("/signin")
+class Signin(Resource):
+    @user_api.doc('로그인')
+    @user_api.expect(signin_model)
+    def post(self):
+        if request.method == 'OPTIONS':
+            return build_preflight_response()
 
-    if len(params) == 2:
-        # 정보가 맞는 경우
-        user_id = params['userId']
-        user_pw = params['password']
-        idCheck = db.User.query.filter_by(userid = user_id).first()
+        res = {}
+        msg = 'success'
+        code = 200
 
-        if idCheck and bcrypt.check_password_hash(idCheck.password, user_pw):
-            payload = {
-                'id': user_id,
-                'iat': int(time.time()),
-                'exp': int(time.time()) + 21600 # 6 hour from now
-            }
-            token = jwt.encode(payload, SECRET_KEY, algorithm='HS256')
-            res["token"] = token
+        params = request.get_json()
+
+        if len(params) == 2:
+            # 정보가 맞는 경우
+            user_id = params['userId']
+            user_pw = params['password']
+            idCheck = db.User.query.filter_by(userid = user_id).first()
+
+            if idCheck and bcrypt.check_password_hash(idCheck.password, user_pw):
+                payload = {
+                    'id': user_id,
+                    'iat': int(time.time()),
+                    'exp': int(time.time()) + 21600 # 6 hour from now
+                }
+                token = jwt.encode(payload, SECRET_KEY, algorithm='HS256')
+                res["token"] = token
+            else:
+                msg = "아이디 혹은 비밀번호를 다시 한 번 확인해주세요."
         else:
-            msg = "아이디 혹은 비밀번호를 다시 한 번 확인해주세요."
-    else:
-        code = 400
-        msg = fail
-    
-    return result_make(res, msg, code)
+            code = 400
+            msg = fail
+
+        return result_make(res, msg, code)
 
 # cookie관리
 @userBlueprint.route("/signin-check", methods=['GET'])
