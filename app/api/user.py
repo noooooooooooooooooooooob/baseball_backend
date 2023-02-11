@@ -130,9 +130,21 @@ class Signin(Resource):
 # 로그아웃
 @userBlueprint.route("/signout", methods=['OPTIONS', 'POST'])
 def signout():
+    if request.method == 'OPTIONS':
+        return build_preflight_response()
+    
+    token_receive = request.cookies.get('loginToken')
+    
+    payload = jwt.decode(token_receive, SECRET_KEY, algorithms=['HS256'])
+    payload['exp'] = 1
+
+    new_token = jwt.encode(payload, SECRET_KEY, algorithm='HS256')
+
     res = {}
     msg = 'success'
     code = 200
+
+    res["token"] = new_token
 
     return result_make(res, msg, code)
 
