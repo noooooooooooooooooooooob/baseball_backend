@@ -1,6 +1,5 @@
-from app.api import user
+from app.api import user,baseball
 from config import app
-from app.swagger import user_api
 
 
 if __name__ == '__main__':

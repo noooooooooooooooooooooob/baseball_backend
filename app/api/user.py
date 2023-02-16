@@ -1,17 +1,14 @@
-from flask import jsonify, request, Blueprint, make_response
+from flask import jsonify, request, Blueprint
 import jwt
 import time
 import app.db as db
 from datetime import datetime
-from config import app,SECRET_KEY, bcrypt
+from config import app,SECRET_KEY, bcrypt, build_preflight_response,build_actual_response,result_make
 from ..swagger import user_api, Resource, signup_model, reqparse,signin_model,signout_model
+from config import fail, success
 import app.swagger as sg
-userBlueprint = Blueprint('user', __name__, url_prefix="/user")
-app.register_blueprint(userBlueprint)
 
 
-fail = '요청 값을 다시 한 번 확인해주세요.'
-success = 'success'
 # 테스트 API
 # @userBlueprint.route("/test", methods=['GET'])
 # def test():
@@ -25,7 +22,7 @@ success = 'success'
 @user_api.route("/signup")
 class Signup(Resource):
     @user_api.doc('회원가입')
-    @user_api.expect(signout_model)
+    @user_api.expect(signup_model)
     def post(self):
 
         res = {}
@@ -110,7 +107,7 @@ class Signin(Resource):
 @user_api.route("/signout")
 class signout(Resource):
     @user_api.doc('로그아웃')
-    @user_api.expect(signin_model)
+    @user_api.expect(signout_model)
     def post(self):
         if request.method == 'OPTIONS':
             return build_preflight_response()
@@ -134,7 +131,7 @@ class signout(Resource):
 @user_api.route("/signin-check")
 class signinCheck(Resource):
     @user_api.doc('로그인확인')
-    @user_api.expect(sg.signCheck_mode)
+    @user_api.expect(sg.signCheck_model)
     def post(self):   
         if request.method == 'OPTIONS':
             return build_preflight_response()
@@ -164,18 +161,4 @@ class signinCheck(Resource):
 
 #     return result_make(res, msg, code)
 
-def build_preflight_response():
-    response = make_response()
-    response.headers.add("Access-Control-Allow-Origin", "*")
-    response.headers.add('Access-Control-Allow-Headers', "*")
-    response.headers.add('Access-Control-Allow-Methods', "*")
-    return response
 
-def build_actual_response(response):
-    response.headers.add("Access-Control-Allow-Origin", "*")
-    return response
-
-def result_make(res, msg, code):
-    result = {'result': res, 'message': msg}
-
-    return make_response(jsonify(result), code)

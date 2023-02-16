@@ -5,7 +5,7 @@ from config import app
 api = Api(app, version='1.0', title='API 문서', description='Swagger 문서', doc="/api-docs")
 
 user_api = api.namespace('user', description='유저 API')
-
+baseball_api = api.namespace('baseball', description="야구 API")
 
 signup_model = api.model('Signup', {
     'userId': fields.String(required=True, description='사용자 ID'),
@@ -22,6 +22,13 @@ signout_model = api.model('Signout', {
     'token': fields.String(required=True, description='토큰')
 })
 
-signCheck_mode = api.model('SignCheck', {
+signCheck_model = api.model('SignCheck', {
         'token': fields.String(required=True, description='토큰')
+})
+
+baseball_create_model = api.model('BaseballCreate', {
+    'home': fields.String(required=True, description='홈팀'),
+    'away': fields.String(required=True, description='어웨이팀'),
+    'matchDate': fields.String(required=True, description='날짜'),
+    'comment': fields.String(required=True, description='코멘트')
 })
