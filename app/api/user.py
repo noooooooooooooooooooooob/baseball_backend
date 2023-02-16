@@ -4,7 +4,8 @@ import time
 import app.db as db
 from datetime import datetime
 from config import app,SECRET_KEY, bcrypt
-from ..swagger import user_api, Resource, signup_model, reqparse,signin_model
+from ..swagger import user_api, Resource, signup_model, reqparse,signin_model,signout_model
+import app.swagger as sg
 userBlueprint = Blueprint('user', __name__, url_prefix="/user")
 app.register_blueprint(userBlueprint)
 
@@ -12,19 +13,19 @@ app.register_blueprint(userBlueprint)
 fail = '요청 값을 다시 한 번 확인해주세요.'
 success = 'success'
 # 테스트 API
-@userBlueprint.route("/test", methods=['GET'])
-def test():
-    res = {'message': 'success'}
-    msg = 'success'
-    code = 200
+# @userBlueprint.route("/test", methods=['GET'])
+# def test():
+#     res = {'message': 'success'}
+#     msg = 'success'
+#     code = 200
 
-    return result_make(res, msg, code)
+#     return result_make(res, msg, code)
 
 # 회원가입 API
 @user_api.route("/signup")
 class Signup(Resource):
     @user_api.doc('회원가입')
-    @user_api.expect(signup_model)
+    @user_api.expect(signout_model)
     def post(self):
 
         res = {}
@@ -46,28 +47,6 @@ class Signup(Resource):
 
         return result_make(res, msg, code)
 
-@userBlueprint.route("/checkid", methods=['OPTIONS', 'GET'])
-def checkId():
-    if request.method == 'OPTIONS':
-        return build_preflight_response()
-    
-    userId = request.args.get("userId")
-    
-    res = {}
-    msg = 'success'
-    code = 200
-
-    if userId is not None:
-        idCheck = db.User.query.filter( db.User.userid == userId).all()
-
-        if len(idCheck) == 0:
-            msg = '사용 가능한 아이디 입니다.'
-        else:
-            res = {}
-            msg = 'fail'
-            code = 400
-
-        return result_make(res, msg, code)
 
 @user_api.route("/checkid/<string:userId>")
 class checkId(Resource):
@@ -128,46 +107,52 @@ class Signin(Resource):
         return result_make(res, msg, code)
 
 # 로그아웃
-@userBlueprint.route("/signout", methods=['OPTIONS', 'POST'])
-def signout():
-    if request.method == 'OPTIONS':
-        return build_preflight_response()
-    
-    token_receive = request.cookies.get('loginToken')
-    
-    payload = jwt.decode(token_receive, SECRET_KEY, algorithms=['HS256'])
-    payload['exp'] = 1
+@user_api.route("/signout")
+class signout(Resource):
+    @user_api.doc('로그아웃')
+    @user_api.expect(signin_model)
+    def post(self):
+        if request.method == 'OPTIONS':
+            return build_preflight_response()
+        
+        token_receive = request.cookies.get('loginToken')
+        
+        payload = jwt.decode(token_receive, SECRET_KEY, algorithms=['HS256'])
+        payload['exp'] = 1
 
-    new_token = jwt.encode(payload, SECRET_KEY, algorithm='HS256')
+        new_token = jwt.encode(payload, SECRET_KEY, algorithm='HS256')
 
-    res = {}
-    msg = 'success'
-    code = 200
+        res = {}
+        msg = 'success'
+        code = 200
 
-    res["token"] = new_token
+        res["token"] = new_token
 
-    return result_make(res, msg, code)
+        return result_make(res, msg, code)
 
 # cookie관리
-@userBlueprint.route("/signin-check", methods=['OPTIONS', 'GET'])
-def signinCheck():
-    if request.method == 'OPTIONS':
-        return build_preflight_response()
+@user_api.route("/signin-check")
+class signinCheck(Resource):
+    @user_api.doc('로그인확인')
+    @user_api.expect(sg.signCheck_mode)
+    def post(self):   
+        if request.method == 'OPTIONS':
+            return build_preflight_response()
 
-    token_receive = request.cookies.get('loginToken')
-    
-    res = {}
-    msg = 'success'
-    code = 200
-    
-    try:
-        payload = jwt.decode(token_receive, SECRET_KEY, algorithms=['HS256'])
-        res = dict(payload)
-    except (jwt.ExpiredSignatureError, jwt.exceptions.DecodeError):
-        msg = '유효하지 않은 토큰 정보 입니다.'
-        code = 403
+        token_receive = request.cookies.get('loginToken')
+        
+        res = {}
+        msg = 'success'
+        code = 200
+        
+        try:
+            payload = jwt.decode(token_receive, SECRET_KEY, algorithms=['HS256'])
+            res = dict(payload)
+        except (jwt.ExpiredSignatureError, jwt.exceptions.DecodeError):
+            msg = '유효하지 않은 토큰 정보 입니다.'
+            code = 403
 
-    return result_make(res, msg, code)
+        return result_make(res, msg, code)
 
 # 고인
 # @userBlueprint.route("/findId")

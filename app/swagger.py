@@ -17,3 +17,11 @@ signin_model = api.model('Signin', {
     'userId': fields.String(required=True, description='사용자 ID'),
     'password': fields.String(required=True, description='비밀번호'),
 })
+
+signout_model = api.model('Signout', {
+    'token': fields.String(required=True, description='토큰')
+})
+
+signCheck_mode = api.model('SignCheck', {
+        'token': fields.String(required=True, description='토큰')
+})
