@@ -22,25 +22,36 @@ class User(db.Model):
 class Baseball(db.Model):
     __table_args__ = {"schema": "baseball"}
     id = db.Column('id', db.Integer, primary_key=True)
-    home = db.Column(db.String(100))
-    matchResult = db.Column(db.String(100))
-    matchTeam = db.Column(db.String(100))
+    userIdx = db.Column(db.Integer())
+    stadium = db.Column(db.String(100))
+    homeResult = db.Column(db.String(100))
+    awayResult = db.Column(db.String(100))
+    homeScore = db.Column(db.String(100))
+    awayScore = db.Column(db.String(100))
+    homeTeam = db.Column(db.String(100))
+    awayTeam = db.Column(db.String(100))
     homeSP = db.Column(db.String(100))
-    homeLineUp = db.Column(db.JSON)
+    homeLineup = db.Column(db.JSON)
     awaySP = db.Column(db.String(100))
-    awayLineUp = db.Column(db.JSON)
+    awayLineup = db.Column(db.JSON)
     comment = db.Column(db.String())
     matchDate = db.Column(db.DateTime)
     insertDate = db.Column(db.DateTime)
     updateDate = db.Column(db.DateTime)
 
-    def __init__(self, home, matchResult, homeSP, homeLineUp, awaySP, awayLineUp, comment, matchDate, insertDate, updateDate):
-        self.home = home
-        self.matchResult = matchResult
+    def __init__(self, userIdx, stadium, homeResult, awayResult, homeScore, awayScore, homeTeam, awayTeam, homeLineup, awayLineup, homeSP, awaySP, comment, matchDate, insertDate, updateDate):
+        self.userIdx = userIdx
+        self.stadium = stadium
+        self.homeResult = homeResult
+        self.awayResult = awayResult
+        self.homeScore = homeScore
+        self.awayScore = awayScore
+        self.homeTeam = homeTeam
+        self.awayTeam = awayTeam
+        self.homeLineup = homeLineup
+        self.awayLineup = awayLineup
         self.homeSP = homeSP
-        self.homeLineUp = homeLineUp
         self.awaySP = awaySP
-        self.awayLineUp = awayLineUp
         self.comment = comment
         self.matchDate = matchDate
         self.insertDate = insertDate
