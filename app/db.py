@@ -23,6 +23,7 @@ class Baseball(db.Model):
     __table_args__ = {"schema": "baseball"}
     id = db.Column('id', db.Integer, primary_key=True)
     userIdx = db.Column(db.Integer())
+    title = db.Column(db.String())
     stadium = db.Column(db.String(100))
     homeResult = db.Column(db.String(100))
     awayResult = db.Column(db.String(100))
@@ -39,8 +40,9 @@ class Baseball(db.Model):
     insertDate = db.Column(db.DateTime)
     updateDate = db.Column(db.DateTime)
 
-    def __init__(self, userIdx, stadium, homeResult, awayResult, homeScore, awayScore, homeTeam, awayTeam, homeLineup, awayLineup, homeSP, awaySP, comment, matchDate, insertDate, updateDate):
+    def __init__(self, userIdx, title, stadium, homeResult, awayResult, homeScore, awayScore, homeTeam, awayTeam, homeLineup, awayLineup, homeSP, awaySP, comment, matchDate, insertDate, updateDate):
         self.userIdx = userIdx
+        self.title = title
         self.stadium = stadium
         self.homeResult = homeResult
         self.awayResult = awayResult
