@@ -41,12 +41,16 @@ class baseballSearchAll(Resource):
         for row in baseball_data:
             data_dict = {
                 "title": row.title,
-                "home": row.homeTeam,
-                "away": row.awayTeam,
-                "homeResult": row.homeResult,
-                "awayResult": row.awayResult,
-                "homeScore": row.homeScore,
-                "awayScore": row.awayScore,
+                "home": {
+                    "team": row.homeTeam,
+                    "result": row.homeResult,
+                    "score": row.homeScore,
+                },
+                "away": {
+                    "team": row.awayTeam,
+                    "result": row.awayResult,
+                    "score": row.awayScore,
+                },
                 "matchData": row.matchDate.strftime("%Y-%m-%d %H:%M:%S %A"),
                 "insertDate": row.insertDate.strftime("%Y-%m-%d %H:%M:%S %A"),
                 "id": row.id
