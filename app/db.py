@@ -40,7 +40,7 @@ class Baseball(db.Model):
     insertDate = db.Column(db.DateTime(timezone = True), nullable = False)
     updateDate = db.Column(db.DateTime(timezone = True), nullable = False)
 
-    def __init__(self, userIdx, title, stadium, homeResult, awayResult, homeScore, awayScore, homeTeam, awayTeam, homeLineup, awayLineup, homeSP, awaySP, comment, matchDate, insertDate, updateDate):
+    def __init__(self, userIdx, title, stadium, homeResult, awayResult, homeScore, awayScore, homeTeam, awayTeam, homeLineup, awayLineup, homeSP, awaySP, comment, matchDate):
         self.userIdx = userIdx
         self.title = title
         self.stadium = stadium
@@ -56,6 +56,4 @@ class Baseball(db.Model):
         self.awaySP = awaySP
         self.comment = comment
         self.matchDate = matchDate
-        self.insertDate = insertDate
-        self.updateDate = updateDate
 

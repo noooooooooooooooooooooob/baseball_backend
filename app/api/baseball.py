@@ -23,14 +23,18 @@ class baseballCreate(Resource):
         baseball_res = requests.get('https://api-gw.sports.naver.com/schedule/games/' + url + '/preview')
 
 
-
         if baseball_res.status_code == 200:
             awayLineup = baseball_res.json()['result']['previewData']['awayTeamLineUp']['fullLineUp']
             homeLineup = baseball_res.json()['result']['previewData']['homeTeamLineUp']['fullLineUp']
             gameData = requests.get("https://api-gw.sports.naver.com/schedule/games/" + url)
-
             homeHitter = []
             awayHitter = []
+            if gameData.json()['result']['game']['statusCode'] != "RESULT":
+                res = {}
+                msg = '해당 날짜에 경기 정보가 없습니다'
+                code = 400
+                return result_make(res, msg, code)
+
 
             for h in homeLineup:
                 if h['positionName'] != "선발투수":
@@ -40,12 +44,12 @@ class baseballCreate(Resource):
             for a in awayLineup:
                 if a['positionName'] != "선발투수":
                     hitter = a['positionName'] + ' ' + a['playerName']
-                    awayHitter.append(hitter)        
-            
+                    awayHitter.append(hitter)
+
 
 
             BaseballData = db.Baseball(
-                userIdx="1", 
+                userIdx="1",
                 title=params['matchDate'] + params['away'] + " VS " + params['home'],
                 stadium=gameData.json()['result']['game']['stadium'],
                 homeResult= "승" if gameData.json()['result']['game']['winner'] == "HOME" else "패",
@@ -59,7 +63,7 @@ class baseballCreate(Resource):
                 awaySP= awayLineup[0]['playerName'],
                 awayLineup= awayHitter,
                 comment= params['comment'],
-                matchDate= gameData.json()['result']['game']['gameDateTime'],
+                matchDate= gameData.json()['result']['game']['gameDateTime']
             )
             db.db.session.add(BaseballData)
             db.db.session.commit()
