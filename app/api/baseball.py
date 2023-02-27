@@ -92,6 +92,7 @@ class baseballSearchAll(Resource):
         for row in baseball_data:
             data_dict = {
                 "title": row.title,
+                "stadium": row.stadium,
                 "home": {
                     "team": row.homeTeam,
                     "result": row.homeResult,
@@ -102,8 +103,8 @@ class baseballSearchAll(Resource):
                     "result": row.awayResult,
                     "score": row.awayScore,
                 },
-                "matchData": row.matchDate.strftime("%Y-%m-%d %H:%M:%S %A"),
-                "insertDate": row.insertDate.strftime("%Y-%m-%d %H:%M:%S %A"),
+                "matchData": row.matchDate.strftime("%Y-%m-%d %H:%M:%S"),
+                "insertDate": row.insertDate.strftime("%Y-%m-%d %H:%M:%S"),
                 "id": row.id
             }
             data_list.append(data_dict)
