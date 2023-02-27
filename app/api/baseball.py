@@ -20,9 +20,6 @@ class baseballCreate(Resource):
         params = request.get_json()
 
         url = params['matchDate'].replace("-","") + TeamCode(params['away']) + TeamCode(params['home'])+ "0" + params['matchDate'][:4]
-        now = datetime.now()
-        print(url)
-        formatted_date = now.strftime("%Y-%m-%d")
         baseball_res = requests.get('https://api-gw.sports.naver.com/schedule/games/' + url + '/preview')
 
 
@@ -62,9 +59,7 @@ class baseballCreate(Resource):
                 awaySP= awayLineup[0]['playerName'],
                 awayLineup= awayHitter,
                 comment= params['comment'],
-                matchDate= params['matchDate'],
-                insertDate=formatted_date,
-                updateDate=formatted_date
+                matchDate= gameData.json()['result']['game']['gameDateTime'],
             )
             db.db.session.add(BaseballData)
             db.db.session.commit()
