@@ -140,6 +140,44 @@ class baseballSearchAll(Resource):
         }
         return result_make(res, msg, code)
 
+# 직관 상세 정보 조회
+@baseball_api.route("/detail/<int:baseballId>")
+class baseballSearchAll(Resource):
+    @baseball_api.doc('직관정보전체조회')
+    def get(self, baseballId):
+        res = {}
+        msg = 'success'
+        code = 200
+
+        if request.method == 'OPTIONS':
+            return build_preflight_response()
+        data = db.Baseball.query.filter_by(id = baseballId).first()
+        
+        res['title'] = data.title
+        res['staium'] = data.stadium
+        res['home'] = {
+            "team": data.homeTeam,
+            "result": data.homeResult,
+            "score": data.homeScore,
+            "sp": data.homeSP,
+            "lineUp": data.homeLineup
+        }
+        res['away'] = {
+            "team": data.awayTeam,
+            "result": data.awayResult,
+            "score": data.awayScore,
+            "sp": data.awaySP,
+            "lineUp": data.awayLineup
+        }
+        res['comment'] = data.comment
+        res['matchData'] = data.matchDate.strftime("%Y-%m-%d %H:%M:%S")
+        res['insertDate'] = data.insertDate.strftime("%Y-%m-%d %H:%M:%S")
+        if hasattr(data, "updateDate"):
+            res['updateDate']: data.updateDate.strftime("%Y-%m-%d %H:%M:%S")
+        res['id']: data.id
+
+        return result_make(res, msg, code)
+
 
 def TeamCode(team):
     if team == "LG 트윈스":
