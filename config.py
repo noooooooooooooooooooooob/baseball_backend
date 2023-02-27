@@ -30,3 +30,6 @@ def result_make(res, msg, code):
     result = {'result': res, 'message': msg}
 
     return make_response(jsonify(result), code)
+
+def date_to_string(date):
+    return date.strftime("%Y-%m-%d %H:%M:%S")

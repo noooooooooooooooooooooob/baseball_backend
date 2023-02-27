@@ -3,7 +3,7 @@ import jwt
 import time
 import app.db as db
 from datetime import datetime
-from config import app,build_actual_response,build_preflight_response,result_make
+from config import app, build_actual_response, build_preflight_response, result_make, date_to_string
 from ..swagger import baseball_api, Resource
 import app.swagger as sg
 import requests
@@ -94,23 +94,22 @@ class baseballSearchAll(Resource):
         data_list = []
 
         for row in baseball_data:
-            data_dict = {
-                "title": row.title,
-                "stadium": row.stadium,
-                "home": {
-                    "team": row.homeTeam,
-                    "result": row.homeResult,
-                    "score": row.homeScore,
-                },
-                "away": {
-                    "team": row.awayTeam,
-                    "result": row.awayResult,
-                    "score": row.awayScore,
-                },
-                "matchData": row.matchDate.strftime("%Y-%m-%d %H:%M:%S"),
-                "insertDate": row.insertDate.strftime("%Y-%m-%d %H:%M:%S"),
-                "id": row.id
+            data_dict['title'] = row.title
+            data_dict['stadium'] = row.stadium
+            data_dict['home'] = {
+                "team": row.homeTeam,
+                "result": row.homeResult,
+                "score": row.homeScore
             }
+            data_dict['away'] = {
+                "team": row.awayTeam,
+                "result": row.awayResult,
+                "score": row.awayScore
+            }
+            data_dict['matchData'] = date_to_string(row.matchData)
+            data_dict['insertDate'] = date_to_string(row.insertDate)
+            data_dict['id'] = row.id
+            
             data_list.append(data_dict)
 
         # 승/패/승률 데이터를 계산합니다.
@@ -174,10 +173,10 @@ class baseballSearchAll(Resource):
             "lineUp": data.awayLineup
         }
         res['comment'] = data.comment
-        res['matchData'] = data.matchDate.strftime("%Y-%m-%d %H:%M:%S")
-        res['insertDate'] = data.insertDate.strftime("%Y-%m-%d %H:%M:%S")
+        res['matchData'] = date_to_string(data.matchDate)
+        res['insertDate'] = date_to_string(data.insertDate)
         if hasattr(data, "updateDate"):
-            res['updateDate']: data.updateDate.strftime("%Y-%m-%d %H:%M:%S")
+            res['updateDate']: date_to_string(data.updateDate)
         res['id']: data.id
 
         return result_make(res, msg, code)
