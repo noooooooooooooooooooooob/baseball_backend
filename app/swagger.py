@@ -27,6 +27,7 @@ signCheck_model = api.model('SignCheck', {
 })
 
 baseball_create_model = api.model('BaseballCreate', {
+    'userIdx': fields.Integer(description='유저 IDX'),
     'home': fields.String(required=True, description='홈팀'),
     'away': fields.String(required=True, description='어웨이팀'),
     'matchDate': fields.String(required=True, description='날짜'),

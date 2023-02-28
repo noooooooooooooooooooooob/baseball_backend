@@ -3,7 +3,7 @@ import jwt
 import time
 import app.db as db
 from datetime import datetime
-from config import app, build_actual_response, build_preflight_response, result_make, date_to_string
+from config import app,build_actual_response,build_preflight_response,result_make, token_required, date_to_string
 from ..swagger import baseball_api, Resource
 import app.swagger as sg
 import requests
@@ -12,17 +12,15 @@ import json
 # 직관정보등록
 @baseball_api.route("/create")
 class baseballCreate(Resource):
+    @token_required
     @baseball_api.doc('직관정보등록')
     @baseball_api.expect(sg.baseball_create_model)
     def post(self):
         if request.method == 'OPTIONS':
             return build_preflight_response()
         params = request.get_json()
-
         url = params['matchDate'].replace("-","") + TeamCode(params['away']) + TeamCode(params['home'])+ "0" + params['matchDate'][:4]
         baseball_res = requests.get('https://api-gw.sports.naver.com/schedule/games/' + url + '/preview')
-
-
         if baseball_res.status_code == 200:
             awayLineup = baseball_res.json()['result']['previewData']['awayTeamLineUp']['fullLineUp']
             homeLineup = baseball_res.json()['result']['previewData']['homeTeamLineUp']['fullLineUp']
@@ -49,7 +47,7 @@ class baseballCreate(Resource):
 
 
             BaseballData = db.Baseball(
-                userIdx="1",
+                userIdx= params['userIdx'], 
                 title=params['matchDate'] + params['away'] + " VS " + params['home'],
                 stadium=gameData.json()['result']['game']['stadium'],
                 homeResult= "승" if gameData.json()['result']['game']['winner'] == "HOME" else "패",
@@ -77,6 +75,7 @@ class baseballCreate(Resource):
         return result_make(res, msg, code)
 
 # 직관 정보 전체 조회
+
 @baseball_api.route("/all/<int:userIdx>")
 class baseballSearchAll(Resource):
     @baseball_api.doc('직관정보전체조회')
@@ -115,16 +114,16 @@ class baseballSearchAll(Resource):
         # 승/패/승률 데이터를 계산합니다.
         win_count = 0
         lose_count = 0
-        taem = user_data.team
+        team = user_data.team
 
         for row in baseball_data:
-            if taem == row.homeTeam:
+            if team == row.homeTeam:
                 if row.homeResult == "승":
                     win_count += 1
                 else:
                     lose_count += 1
             
-            if taem == row.awayTeam:
+            if team == row.awayTeam:
                 if row.awayResult == "승":
                     win_count += 1
                 else:

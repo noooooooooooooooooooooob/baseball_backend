@@ -1,7 +1,9 @@
-from flask import Flask,make_response,jsonify
+from flask import Flask,make_response,jsonify,request
 from flask_restx import Api, Resource, reqparse
 from flask_sqlalchemy import SQLAlchemy
 from flask_bcrypt import Bcrypt
+from functools import wraps
+import jwt
 
 app = Flask(__name__)
 bcrypt = Bcrypt(app)
@@ -31,5 +33,26 @@ def result_make(res, msg, code):
 
     return make_response(jsonify(result), code)
 
+
 def date_to_string(date):
     return date.strftime("%Y-%m-%d %H:%M:%S")
+
+def token_required(f):
+    @wraps(f)
+    def decorated(*args, **kwargs):
+        token = None
+        res = {}
+        msg = '로그인후 이용 가능합니다'
+        code = 401
+        if 'Authorization' in request.headers:
+            auth_header = request.headers['Authorization']
+            token = auth_header.split(" ")[1]
+        if not token:
+
+            return result_make(res, msg, code)
+        try:
+            data = jwt.decode(token, app.config['SECRET_KEY'])
+        except:
+            return result_make(res,msg,code)
+        return f(*args, **kwargs)
+    return decorated
