@@ -78,6 +78,7 @@ class baseballCreate(Resource):
 
 @baseball_api.route("/all/<int:userIdx>")
 class baseballSearchAll(Resource):
+    
     @baseball_api.doc('직관정보전체조회')
     def get(self, userIdx):
         res = {}
@@ -91,7 +92,7 @@ class baseballSearchAll(Resource):
         user_data = db.User.query.filter_by(id = userIdx).first()
 
         data_list = []
-
+        data_dict = {}
         for row in baseball_data:
             data_dict['title'] = row.title
             data_dict['stadium'] = row.stadium
@@ -105,7 +106,7 @@ class baseballSearchAll(Resource):
                 "result": row.awayResult,
                 "score": row.awayScore
             }
-            data_dict['matchData'] = date_to_string(row.matchData)
+            data_dict['matchDate'] = date_to_string(row.matchDate)
             data_dict['insertDate'] = date_to_string(row.insertDate)
             data_dict['id'] = row.id
             
