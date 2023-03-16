@@ -47,7 +47,7 @@ class baseballCreate(Resource):
 
 
             BaseballData = db.Baseball(
-                userIdx= params['userIdx'], 
+                userIdx= params['userIdx'],
                 title=params['matchDate'] + params['away'] + " VS " + params['home'],
                 stadium=gameData.json()['result']['game']['stadium'],
                 homeResult= "승" if gameData.json()['result']['game']['winner'] == "HOME" else "패",
@@ -69,25 +69,24 @@ class baseballCreate(Resource):
             msg = 'success'
             code = 201
         elif baseball_res.status_code == 404:
-            res = {}        
+            res = {}
             msg = '해당 날짜에 경기 정보가 없습니다'
             code = 400
         return result_make(res, msg, code)
 
 # 직관 정보 전체 조회
 
-@baseball_api.route("/all/<int:userIdx>")
+@baseball_api.route("/all")
 class baseballSearchAll(Resource):
-    
+    @token_required
     @baseball_api.doc('직관정보전체조회')
-    def get(self, userIdx):
+    def get(self, user):
         res = {}
         msg = 'success'
         code = 200
-
+        userIdx = user.id
         if request.method == 'OPTIONS':
             return build_preflight_response()
-        
         baseball_data = db.Baseball.query.filter(db.Baseball.userIdx == userIdx).all()
         user_data = db.User.query.filter_by(id = userIdx).first()
 
@@ -109,7 +108,7 @@ class baseballSearchAll(Resource):
             data_dict['matchDate'] = date_to_string(row.matchDate)
             data_dict['insertDate'] = date_to_string(row.insertDate)
             data_dict['id'] = row.id
-            
+
             data_list.append(data_dict)
 
         # 승/패/승률 데이터를 계산합니다.
@@ -123,7 +122,7 @@ class baseballSearchAll(Resource):
                     win_count += 1
                 else:
                     lose_count += 1
-            
+
             if team == row.awayTeam:
                 if row.awayResult == "승":
                     win_count += 1
@@ -131,14 +130,13 @@ class baseballSearchAll(Resource):
                     lose_count += 1
 
         total_count = win_count + lose_count
-        odds = round(win_count / total_count * 100, 1)
 
         res = {
             "data": data_list,
             "stats": {
                 "win": win_count,
                 "lose": lose_count,
-                "odds": odds
+
             }
         }
         return result_make(res, msg, code)
@@ -155,7 +153,7 @@ class baseballSearchAll(Resource):
         if request.method == 'OPTIONS':
             return build_preflight_response()
         data = db.Baseball.query.filter_by(id = baseballId).first()
-        
+
         res['title'] = data.title
         res['staium'] = data.stadium
         res['home'] = {
@@ -181,6 +179,28 @@ class baseballSearchAll(Resource):
 
         return result_make(res, msg, code)
 
+@baseball_api.route("/update")
+class baseballCreate(Resource):
+    @token_required
+    @baseball_api.doc('직관정보수정')
+    @baseball_api.expect(sg.baseball_update_model)
+    def put(self):
+        if request.method == 'OPTIONS':
+            return build_preflight_response()
+        params = request.get_json()
+        res = {}
+        msg = 'success'
+        code = 200
+
+        data = db.Baseball.query.filter_by(id=params['id']).first()
+
+        if data is None:
+            msg = "등록 된 직관 정보가 없습니다."
+            code = 400
+        else:
+            db.Baseball.query.filter_by(id=params['id']).update({db.Baseball.title: params['title'], db.Baseball.comment: params['comment']})
+            db.db.session.commit()
+        return result_make(res, msg, code)
 
 def TeamCode(team):
     if team == "LG 트윈스":

@@ -34,3 +34,9 @@ baseball_create_model = api.model('BaseballCreate', {
     'doubleheader': fields.String(required=True, description='더블헤더'),
     'comment': fields.String(required=True, description='코멘트')
 })
+
+baseball_update_model = api.model('BaseballCreate', {
+    'id': fields.Integer(description='경기 IDX'),
+    'title': fields.String(required=True, description='제목'),
+    'comment': fields.String(required=True, description='코멘트'),
+})

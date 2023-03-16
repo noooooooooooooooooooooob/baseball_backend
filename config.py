@@ -4,7 +4,7 @@ from flask_sqlalchemy import SQLAlchemy
 from flask_bcrypt import Bcrypt
 from functools import wraps
 import jwt
-
+import app.db as db2
 app = Flask(__name__)
 bcrypt = Bcrypt(app)
 app.config['SQLALCHEMY_DATABASE_URI'] = "postgresql://qpdqfreb:vupguJOZHn0GifZiWvj7Z6kNk_acbE7t@chunee.db.elephantsql.com/qpdqfreb"
@@ -44,6 +44,9 @@ def token_required(f):
         res = {}
         msg = '로그인후 이용 가능합니다'
         code = 401
+
+
+
         if 'Authorization' in request.headers:
             auth_header = request.headers['Authorization']
             token = auth_header.split(" ")[1]
@@ -51,7 +54,10 @@ def token_required(f):
 
             return result_make(res, msg, code)
         try:
-            data = jwt.decode(token, app.config['SECRET_KEY'])
+            payload = jwt.decode(token, SECRET_KEY, algorithms=['HS256'])
+            user_id = payload['user_id']
+            user = db2.User.query.filter_by(id=user_id).first()
+            kwargs['user'] = user
         except:
             return result_make(res,msg,code)
         return f(*args, **kwargs)

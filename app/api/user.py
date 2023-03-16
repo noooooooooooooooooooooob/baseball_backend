@@ -91,7 +91,8 @@ class Signin(Resource):
                 payload = {
                     'id': user_id,
                     'iat': int(time.time()),
-                    'exp': int(time.time()) + 21600 # 6 hour from now
+                    'exp': int(time.time()) + 21600, # 6 hour from now
+                    'user_id': idCheck.id
                 }
                 token = jwt.encode(payload, SECRET_KEY, algorithm='HS256')
                 res["token"] = token
