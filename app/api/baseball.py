@@ -144,8 +144,9 @@ class baseballSearchAll(Resource):
 # 직관 상세 정보 조회
 @baseball_api.route("/detail/<int:baseballId>")
 class baseballSearchAll(Resource):
+    @token_required
     @baseball_api.doc('직관정보전체조회')
-    def get(self, baseballId):
+    def get(self, user, baseballId):
         res = {}
         msg = 'success'
         code = 200
