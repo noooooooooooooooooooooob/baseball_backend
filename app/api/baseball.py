@@ -203,6 +203,30 @@ class baseballCreate(Resource):
             db.db.session.commit()
         return result_make(res, msg, code)
 
+@baseball_api.route("/delete/<int:baseballId>")
+class baseballCreate(Resource):
+    @token_required
+    @baseball_api.doc('직관정보삭제')
+    def delete(self, user, baseballId):
+        if request.method == 'OPTIONS':
+            return build_preflight_response()
+        res = {}
+        msg = 'success'
+        code = 204
+
+        data = db.Baseball.query.filter(
+            db.Baseball.id == baseballId,
+            db.Baseball.userIdx == user.id
+        ).first()
+
+        if data is None:
+            msg = "등록 된 직관 정보가 없습니다."
+            code = 400
+        else:
+            db.db.session.delete(data)
+            db.db.session.commit()
+        return result_make(res, msg, code)
+
 def TeamCode(team):
     if team == "LG 트윈스":
         team = "LG"
