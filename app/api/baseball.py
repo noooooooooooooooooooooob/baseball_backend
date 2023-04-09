@@ -91,8 +91,8 @@ class baseballSearchAll(Resource):
         user_data = db.User.query.filter_by(id = userIdx).first()
 
         data_list = []
-        data_dict = {}
         for row in baseball_data:
+            data_dict = {}
             data_dict['title'] = row.title
             data_dict['stadium'] = row.stadium
             data_dict['home'] = {
@@ -130,13 +130,15 @@ class baseballSearchAll(Resource):
                     lose_count += 1
 
         total_count = win_count + lose_count
+        odds = int(win_count / total_count * 100)
 
         res = {
             "data": data_list,
             "stats": {
+                "total": total_count,
                 "win": win_count,
                 "lose": lose_count,
-
+                "odss": int(odds)
             }
         }
         return result_make(res, msg, code)
