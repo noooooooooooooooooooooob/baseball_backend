@@ -56,14 +56,14 @@ class baseballCreate(Resource):
 
             BaseballData = db.Baseball(
                 userIdx= user.id,
-                title=params['matchDate'] + params['away'] + " VS " + params['home'],
+                title=params['matchDate'] + " " + params['away'] + " VS " + params['home'],
                 stadium=gameData.json()['result']['game']['stadium'],
                 homeResult= "승" if gameData.json()['result']['game']['winner'] == "HOME" else "패",
                 awayResult= "승" if gameData.json()['result']['game']['winner'] == "AWAY" else "패",
                 homeScore= gameData.json()['result']['game']['homeTeamScore'],
                 awayScore= gameData.json()['result']['game']['awayTeamScore'],
-                homeTeam= gameData.json()['result']['game']['homeTeamName'],
-                awayTeam= gameData.json()['result']['game']['awayTeamName'],
+                homeTeam= params['home'],
+                awayTeam= params['away'],
                 homeSP = homeLineup[0]['playerName'],
                 homeLineup= homeHitter,
                 awaySP= awayLineup[0]['playerName'],
