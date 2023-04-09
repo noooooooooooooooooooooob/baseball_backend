@@ -91,6 +91,11 @@ class baseballSearchAll(Resource):
         user_data = db.User.query.filter_by(id = userIdx).first()
 
         data_list = []
+
+        win_count = 0
+        lose_count = 0
+        team = user_data.team
+
         for row in baseball_data:
             data_dict = {}
             data_dict['title'] = row.title
@@ -109,14 +114,6 @@ class baseballSearchAll(Resource):
             data_dict['insertDate'] = date_to_string(row.insertDate)
             data_dict['id'] = row.id
 
-            data_list.append(data_dict)
-
-        # 승/패/승률 데이터를 계산합니다.
-        win_count = 0
-        lose_count = 0
-        team = user_data.team
-
-        for row in baseball_data:
             if team == row.homeTeam:
                 if row.homeResult == "승":
                     win_count += 1
@@ -128,6 +125,8 @@ class baseballSearchAll(Resource):
                     win_count += 1
                 else:
                     lose_count += 1
+
+            data_list.append(data_dict)
 
         total_count = win_count + lose_count
         odds = int(win_count / total_count * 100)
