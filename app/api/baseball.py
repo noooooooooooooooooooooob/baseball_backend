@@ -19,13 +19,15 @@ class baseballCreate(Resource):
         if request.method == 'OPTIONS':
             return build_preflight_response()
         params = request.get_json()
-        url = params['matchDate'].replace("-","") + TeamCode(params['away']) + TeamCode(params['home'])+ "0" + params['matchDate'][:4]
+        
+        url = params['matchDate'].replace("-","") + TeamCode(params['away']) + TeamCode(params['home'])+ str(params['doubleHeader']) + params['matchDate'][:4]
         baseball_res = requests.get('https://api-gw.sports.naver.com/schedule/games/' + url + '/preview')
 
         if baseball_res.status_code == 200:
             awayLineup = baseball_res.json()['result']['previewData']['awayTeamLineUp']['fullLineUp']
             homeLineup = baseball_res.json()['result']['previewData']['homeTeamLineUp']['fullLineUp']
             gameData = requests.get("https://api-gw.sports.naver.com/schedule/games/" + url)
+            
             homeHitter = []
             awayHitter = []
             if gameData.json()['result']['game']['statusCode'] != "RESULT":
@@ -46,6 +48,11 @@ class baseballCreate(Resource):
                     awayHitter.append(hitter)
 
 
+            if 'comment' in params:
+                commentText=params['comment']
+            else:
+                commentText = None
+                
 
             BaseballData = db.Baseball(
                 userIdx= user.id,
@@ -61,7 +68,7 @@ class baseballCreate(Resource):
                 homeLineup= homeHitter,
                 awaySP= awayLineup[0]['playerName'],
                 awayLineup= awayHitter,
-                comment= params['comment'],
+                comment=commentText,
                 matchDate= gameData.json()['result']['game']['gameDateTime']
             )
             db.db.session.add(BaseballData)
