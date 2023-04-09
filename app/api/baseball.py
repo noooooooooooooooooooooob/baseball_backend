@@ -48,7 +48,7 @@ class baseballCreate(Resource):
 
 
             BaseballData = db.Baseball(
-                userIdx= user.user_id,
+                userIdx= user.id,
                 title=params['matchDate'] + params['away'] + " VS " + params['home'],
                 stadium=gameData.json()['result']['game']['stadium'],
                 homeResult= "승" if gameData.json()['result']['game']['winner'] == "HOME" else "패",
