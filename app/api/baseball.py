@@ -15,12 +15,13 @@ class baseballCreate(Resource):
     @token_required
     @baseball_api.doc('직관정보등록')
     @baseball_api.expect(sg.baseball_create_model)
-    def post(self):
+    def post(self, user):
         if request.method == 'OPTIONS':
             return build_preflight_response()
         params = request.get_json()
         url = params['matchDate'].replace("-","") + TeamCode(params['away']) + TeamCode(params['home'])+ "0" + params['matchDate'][:4]
         baseball_res = requests.get('https://api-gw.sports.naver.com/schedule/games/' + url + '/preview')
+
         if baseball_res.status_code == 200:
             awayLineup = baseball_res.json()['result']['previewData']['awayTeamLineUp']['fullLineUp']
             homeLineup = baseball_res.json()['result']['previewData']['homeTeamLineUp']['fullLineUp']
@@ -47,7 +48,7 @@ class baseballCreate(Resource):
 
 
             BaseballData = db.Baseball(
-                userIdx= params['userIdx'],
+                userIdx= user.user_id,
                 title=params['matchDate'] + params['away'] + " VS " + params['home'],
                 stadium=gameData.json()['result']['game']['stadium'],
                 homeResult= "승" if gameData.json()['result']['game']['winner'] == "HOME" else "패",
