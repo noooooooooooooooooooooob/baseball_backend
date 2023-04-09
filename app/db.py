@@ -1,5 +1,5 @@
 from config import db
-
+from datetime import datetime
 
 class User(db.Model):
     __table_args__ = {"schema": "baseball"}
@@ -37,7 +37,7 @@ class Baseball(db.Model):
     awaySP = db.Column(db.String)
     comment = db.Column(db.Text)
     matchDate = db.Column(db.DateTime(timezone = True), nullable = False)
-    insertDate = db.Column(db.DateTime(timezone = True), nullable = False)
+    insertDate = db.Column(db.DateTime(timezone = True), default=datetime.utcnow, nullable = False)
     updateDate = db.Column(db.DateTime(timezone = True), nullable = False)
 
     def __init__(self, userIdx, title, stadium, homeResult, awayResult, homeScore, awayScore, homeTeam, awayTeam, homeLineup, awayLineup, homeSP, awaySP, comment, matchDate):
