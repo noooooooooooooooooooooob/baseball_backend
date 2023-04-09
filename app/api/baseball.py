@@ -180,7 +180,9 @@ class baseballSearchAll(Resource):
             "sp": data.awaySP,
             "lineUp": data.awayLineup
         }
-        res['comment'] = data.comment
+
+        if hasattr(data, "comment"):
+            res['comment'] = data.comment
         res['matchData'] = date_to_string(data.matchDate)
         res['insertDate'] = date_to_string(data.insertDate)
         if hasattr(data, "updateDate"):
