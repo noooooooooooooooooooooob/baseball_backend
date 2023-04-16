@@ -93,8 +93,10 @@ class baseballSearchAll(Resource):
         msg = 'success'
         code = 200
         userIdx = user.id
+        
         if request.method == 'OPTIONS':
             return build_preflight_response()
+
         baseball_data = db.Baseball.query.filter(db.Baseball.userIdx == userIdx).all()
         user_data = db.User.query.filter_by(id = userIdx).first()
 
@@ -103,6 +105,9 @@ class baseballSearchAll(Resource):
         win_count = 0
         lose_count = 0
         team = user_data.team
+
+        if not baseball_data:
+            return result_make(res, msg, code)
 
         for row in baseball_data:
             data_dict = {}
