@@ -188,7 +188,7 @@ class baseballSearchAll(Resource):
 
         if hasattr(data, "comment"):
             res['comment'] = data.comment
-        res['matchData'] = date_to_string(data.matchDate)
+        res['matchDate'] = date_to_string(data.matchDate)
         res['insertDate'] = date_to_string(data.insertDate)
         if hasattr(data, "updateDate"):
             res['updateDate']: date_to_string(data.updateDate)
