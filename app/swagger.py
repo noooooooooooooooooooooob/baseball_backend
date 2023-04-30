@@ -3,9 +3,19 @@ from config import app
 
 
 api = Api(app, version='1.0', title='API 문서', description='Swagger 문서', doc="/api-docs")
+security2 = {
+    'Bearer Auth': {
+        'type': 'apiKey',
+        'name': 'Authorization',
+        'in': 'header',
+        'description': 'Bearer access token'
+    }
+}
+
+api.authorizations = security2
 
 user_api = api.namespace('user', description='유저 API')
-baseball_api = api.namespace('baseball', description="야구 API")
+baseball_api = api.namespace('baseball', description="야구 API",  security='Bearer Auth')
 
 signup_model = api.model('Signup', {
     'userId': fields.String(required=True, description='사용자 ID'),
@@ -14,8 +24,8 @@ signup_model = api.model('Signup', {
 })
 
 signin_model = api.model('Signin', {
-    'userId': fields.String(required=True, description='사용자 ID'),
-    'password': fields.String(required=True, description='비밀번호'),
+    'userId': fields.String(required=True, description='사용자 ID', example='admin'),
+    'password': fields.String(required=True, description='비밀번호', example='admin'),
 })
 
 signout_model = api.model('Signout', {

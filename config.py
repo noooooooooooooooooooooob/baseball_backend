@@ -50,11 +50,12 @@ def token_required(f):
         msg = '로그인후 이용 가능합니다'
         code = 401
 
-
-
         if 'Authorization' in request.headers:
             auth_header = request.headers['Authorization']
-            token = auth_header.split(" ")[1]
+            if auth_header.startswith("Bearer "):
+                token = auth_header.split(" ")[1]
+            else:
+                token = auth_header
         if not token:
 
             return result_make(res, msg, code)
