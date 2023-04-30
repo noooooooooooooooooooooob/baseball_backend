@@ -3,11 +3,12 @@ import jwt
 import time
 import app.db as db
 from datetime import datetime
-from config import app,build_actual_response,build_preflight_response,result_make, token_required, date_to_string
+from config import app,build_actual_response,build_preflight_response,result_make, token_required, date_to_string, naver_api_url
 from ..swagger import baseball_api, Resource
 import app.swagger as sg
 import requests
 import json
+
 
 # 직관정보등록
 @baseball_api.route("/create")
@@ -20,13 +21,13 @@ class baseballCreate(Resource):
             return build_preflight_response()
         params = request.get_json()
         
-        url = params['matchDate'].replace("-","") + TeamCode(params['away']) + TeamCode(params['home'])+ str(params['doubleHeader']) + params['matchDate'][:4]
-        baseball_res = requests.get('https://api-gw.sports.naver.com/schedule/games/' + url + '/preview')
+        urlParams = params['matchDate'].replace("-","") + TeamCode(params['away']) + TeamCode(params['home'])+ str(params['doubleHeader']) + params['matchDate'][:4]
+        baseball_res = requests.get(naver_api_url + urlParams + '/preview')
 
         if baseball_res.status_code == 200:
             awayLineup = baseball_res.json()['result']['previewData']['awayTeamLineUp']['fullLineUp']
             homeLineup = baseball_res.json()['result']['previewData']['homeTeamLineUp']['fullLineUp']
-            gameData = requests.get("https://api-gw.sports.naver.com/schedule/games/" + url)
+            gameData = requests.get(naver_api_url + urlParams)
             
             homeHitter = []
             awayHitter = []

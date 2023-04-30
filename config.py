@@ -5,9 +5,13 @@ from flask_bcrypt import Bcrypt
 from functools import wraps
 import jwt
 import app.db as db2
+from dotenv import load_dotenv
+import os 
+
+load_dotenv()
 app = Flask(__name__)
 bcrypt = Bcrypt(app)
-app.config['SQLALCHEMY_DATABASE_URI'] = "postgresql://qpdqfreb:vupguJOZHn0GifZiWvj7Z6kNk_acbE7t@chunee.db.elephantsql.com/qpdqfreb"
+app.config['SQLALCHEMY_DATABASE_URI'] = os.environ.get('DB_URL')
 app.config['SECRET_KEY'] = "12346erwef"
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 app.config['JSON_AS_ASCII'] = False
@@ -16,6 +20,7 @@ db = SQLAlchemy(app)
 
 fail = '요청 값을 다시 한 번 확인해주세요.'
 success = 'success'
+naver_api_url = os.environ.get("NAVER_API_URL")
 
 def build_preflight_response():
     response = make_response()
